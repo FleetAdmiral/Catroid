@@ -46,6 +46,7 @@ import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import org.catrobat.catroid.R;
 import org.catrobat.catroid.common.Constants;
@@ -65,6 +66,7 @@ public class WebViewActivity extends BaseActivity {
 	public static final String MEDIA_FILE_PATH = "media_file_path";
 	public static final String CALLING_ACTIVITY = "calling_activity";
 	private static final String FILENAME_TAG = "fname=";
+	private ProgressDialog progressCircle;
 
 	private WebView webView;
 	private boolean callMainMenu = false;
@@ -72,6 +74,7 @@ public class WebViewActivity extends BaseActivity {
 	private String callingActivity;
 	private ProgressDialog progressDialog;
 	private Intent resultIntent = new Intent();
+    private int webload_status = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +95,7 @@ public class WebViewActivity extends BaseActivity {
 		webView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.application_background_color, null));
 
 		webView.setWebChromeClient(new WebChromeClient() {
-			private ProgressDialog progressCircle;
+
 
 			@Override
 			public void onProgressChanged(WebView view, int progress) {
@@ -106,11 +109,16 @@ public class WebViewActivity extends BaseActivity {
 						Log.e(TAG, "Exception while showing progress circle", e);
 					}
 				}
+                if (progress == 100) {
+                    webload_status = 1;
+                }
 
-				if (progress == 100) {
-					progressCircle.dismiss();
-					progressCircle = null;
-				}
+                if (webload_status == 1) {
+                    progressCircle.dismiss();
+                    progressCircle = null;
+                }
+
+
 			}
 		});
 		webView.setWebViewClient(new MyWebViewClient());
@@ -191,16 +199,22 @@ public class WebViewActivity extends BaseActivity {
 	}
 
 	private class MyWebViewClient extends WebViewClient {
+
 		@Override
 		public void onPageStarted(WebView view, String urlClient, Bitmap favicon) {
 			if (callMainMenu && urlClient.equals(Constants.BASE_URL_HTTPS)) {
 				Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
 				startActivity(intent);
-			}
+            }
 		}
 
 		@Override
 		public void onPageFinished(WebView view, String url) {
+            if (progressCircle != null) {
+                webload_status = 1;
+                progressCircle.dismiss();
+                progressCircle = null;
+            }
 			callMainMenu = true;
 		}
 
