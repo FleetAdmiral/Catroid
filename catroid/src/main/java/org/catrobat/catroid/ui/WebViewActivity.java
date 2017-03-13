@@ -102,7 +102,7 @@ public class WebViewActivity extends BaseActivity {
 				if (progressCircle == null) {
 					progressCircle = new ProgressDialog(view.getContext(), R.style.WebViewLoadingCircle);
 					progressCircle.setCancelable(true);
-                    progressCircle.setCanceledOnTouchOutside(false);
+                                        progressCircle.setCanceledOnTouchOutside(false);
 					progressCircle.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
 					try {
 						progressCircle.show();
